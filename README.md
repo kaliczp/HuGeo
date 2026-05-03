@@ -18,12 +18,13 @@ accuracy comes from the official horizontal grid and geoid in the `ETRS89 <-> EO
 step.
 
 The legacy TECA reference used by the regression tests is based on the original
-Soproni Egyetem application by Brolly Gábor:
+Soproni University application by Brolly Gábor. The original TECA work can be
+described as:
 
-- `TECA: TÉrbeli Coordináta Átszámító alkalmazás`
+- `TECA: Spatial Coordinate Conversion Application`
 - `Brolly Gábor`
-- `Koordináta transzformáció: WGS84 --> EOV országos paraméterkészlet`
-- `Az alkalmazás a maradékokkal javítja az országos transzformációt`
+- `Coordinate transformation: WGS84 -> EOV using the national parameter set`
+- `The application improves the national transformation using residual corrections`
 
 The modern official solution used by HuGeo is:
 
@@ -44,10 +45,14 @@ Step summary:
 
 Accuracy:
 
-- The official grid workflow is the production path and is the one intended for survey-grade use.
-- The original grid data is designed to match the official EHT / PROJ workflow.
-- For the official test fixtures, the implementation is validated at the centimeter level and is expected to stay within that range on covered points.
-- The legacy TECA path remains only as a regression reference and should not be used as the preferred production route.
+- The legacy TECA path is a regression reference only. On the full EHT point set
+  used by the tests, it shows an average horizontal error of about `0.11 m`,
+  a `0.74 m` maximum latitude-derived error, and `0.739 m` maximum horizontal error.
+- The modern official grid path is the production route. On the benchmark sets
+  used in the tests, it shows about `0.12-0.13 m` average horizontal error, with
+  `p95` around `0.21-0.24 m` and `p99` around `0.22-0.28 m` on covered points.
+- The official reverse workflow is also exercised by regression tests and is
+  intended for survey-grade use with the official grid and geoid resources.
 
 ## Status
 
