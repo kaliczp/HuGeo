@@ -45,16 +45,20 @@ Step summary:
 
 Accuracy:
 
-| Path | Test set | Mean horizontal error | High-end error |
-| --- | --- | ---: | ---: |
-| TECA legacy | Full EHT point set | `~0.11 m` | `~0.74 m` max latitude-derived error, `0.739 m` max horizontal error |
-| Official grid | Digiterra benchmark | `0.1297 m` | `p95 0.2371 m`, `p99 0.2806 m`, `27.3362 m` max on covered points |
-| Official grid | EHT 4.1 benchmark | `0.1187 m` | `p95 0.2059 m`, `p99 0.2163 m`, `27.3362 m` max on covered points |
+| Path | Test set | Coverage | Mean horizontal error | High-end error |
+| --- | --- | ---: | ---: | ---: |
+| TECA legacy | Full EHT point set | `116236/116236` | `~0.11 m` | `0.739 m` max horizontal error |
+| Official grid | `eov-etrs89-official.txt` | `310/320` | `0.0036 m` | `0.0108 m` max horizontal error, `0.0072 m` p95 |
+| Official grid | `etrs89-eov-official.txt` | `310/320` | `0.0042 m` | `0.0114 m` max horizontal error, `0.0080 m` p95 |
+| Official grid | Digiterra benchmark | `103094/203681` | `0.1297 m` | `0.2806 m` p99, `27.3362 m` max on covered points |
+| Official grid | EHT 4.1 benchmark | `103084/116236` | `0.1187 m` | `0.2163 m` p99, `27.3362 m` max on covered points |
 
 Notes:
 
 - The legacy TECA path is a regression reference only.
 - The modern official grid path is the production route.
+- The `official.txt` fixtures are the best indication of survey-grade accuracy:
+  they stay around the millimetre to low-centimetre range on covered points.
 - The official reverse workflow is exercised by regression tests and is intended
   for survey-grade use with the official grid and geoid resources.
 
