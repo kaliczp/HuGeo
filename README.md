@@ -25,6 +25,30 @@ Soproni Egyetem application by Brolly Gábor:
 - `Koordináta transzformáció: WGS84 --> EOV országos paraméterkészlet`
 - `Az alkalmazás a maradékokkal javítja az országos transzformációt`
 
+The modern official solution used by HuGeo is:
+
+```text
+WGS84 -> ETRS89 -> EOV/HD72
+```
+
+Step summary:
+
+1. `WGS84 -> ETRS89`
+   - explicit type step in HuGeo
+   - no time-dependent datum model is applied
+2. `ETRS89 -> EOV/HD72`
+   - official horizontal correction grid is applied
+   - official geoid correction is applied for height
+3. `EOV/HD72 -> ETRS89 -> WGS84`
+   - reverse workflow uses the same official resources in the opposite direction
+
+Accuracy:
+
+- The official grid workflow is the production path and is the one intended for survey-grade use.
+- The original grid data is designed to match the official EHT / PROJ workflow.
+- For the official test fixtures, the implementation is validated at the centimeter level and is expected to stay within that range on covered points.
+- The legacy TECA path remains only as a regression reference and should not be used as the preferred production route.
+
 ## Status
 
 - .NET `8.0`
