@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+
+    <AssemblyName>HuGeo</AssemblyName>
+    <RootNamespace>HuGeo</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <PackageId>HuGeo</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Primusz</Authors>
+    <Description>Hungarian coordinate transformation library for legacy TECA and survey-grade official workflows.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="**/*.cs"
+             Exclude="**/bin/**;**/obj/**" />
+    <EmbeddedResource Include="Resources/Resources/eov-wgs84.txt;Resources/Resources/wgs84-eov.txt;Resources/Resources/grid_delta.dat;Resources/Resources/*.hgbin"
+                      Exclude="**/bin/**;**/obj/**">
+      <LogicalName>HuGeo.Resources.Resources.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <None Include="Resources/Resources/hu_bme_*.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
+</Project>

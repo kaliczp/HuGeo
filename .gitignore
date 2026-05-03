@@ -1,0 +1,16 @@
+.vs/
+.claude/
+.Claude/
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local artifacts not meant for public repo
+eurocontrol-coordinate-reference-systems-basic-user-guide.pdf
+pontossagvizsgalat_teca.xls
+
+# Keep source data text files, but not temp/editor backups
+*~

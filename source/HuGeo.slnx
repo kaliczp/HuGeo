@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="HuGeo/HuGeo.csproj" />
+  <Project Path="HuGeo.Test/HuGeo.Test.csproj" />
+</Solution>
