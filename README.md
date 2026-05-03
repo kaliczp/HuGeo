@@ -45,14 +45,18 @@ Step summary:
 
 Accuracy:
 
-- The legacy TECA path is a regression reference only. On the full EHT point set
-  used by the tests, it shows an average horizontal error of about `0.11 m`,
-  a `0.74 m` maximum latitude-derived error, and `0.739 m` maximum horizontal error.
-- The modern official grid path is the production route. On the benchmark sets
-  used in the tests, it shows about `0.12-0.13 m` average horizontal error, with
-  `p95` around `0.21-0.24 m` and `p99` around `0.22-0.28 m` on covered points.
-- The official reverse workflow is also exercised by regression tests and is
-  intended for survey-grade use with the official grid and geoid resources.
+| Path | Test set | Mean horizontal error | High-end error |
+| --- | --- | ---: | ---: |
+| TECA legacy | Full EHT point set | `~0.11 m` | `~0.74 m` max latitude-derived error, `0.739 m` max horizontal error |
+| Official grid | Digiterra benchmark | `0.1297 m` | `p95 0.2371 m`, `p99 0.2806 m`, `27.3362 m` max on covered points |
+| Official grid | EHT 4.1 benchmark | `0.1187 m` | `p95 0.2059 m`, `p99 0.2163 m`, `27.3362 m` max on covered points |
+
+Notes:
+
+- The legacy TECA path is a regression reference only.
+- The modern official grid path is the production route.
+- The official reverse workflow is exercised by regression tests and is intended
+  for survey-grade use with the official grid and geoid resources.
 
 ## Status
 
