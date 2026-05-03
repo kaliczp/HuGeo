@@ -17,6 +17,14 @@ WGS84 -> ETRS89 -> EOV/HD72
 accuracy comes from the official horizontal grid and geoid in the `ETRS89 <-> EOV/HD72`
 step.
 
+The legacy TECA reference used by the regression tests is based on the original
+Soproni Egyetem application by Brolly Gábor:
+
+- `TECA: TÉrbeli Coordináta Átszámító alkalmazás`
+- `Brolly Gábor`
+- `Koordináta transzformáció: WGS84 --> EOV országos paraméterkészlet`
+- `Az alkalmazás a maradékokkal javítja az országos transzformációt`
+
 ## Status
 
 - .NET `8.0`
@@ -82,7 +90,8 @@ and the obsolete `Transform(...)` / `TransformAsync(...)` methods.
 
 - `TransformationMode.OfficialGrid` uses the official correction grid and geoid.
 - The official data comes from the public EHT / PROJ sources.
-- The legacy TECA path is kept only for comparison and regression checks.
+- The legacy TECA path is kept only for comparison and regression checks, and
+  is based on the Soproni Egyetem TECA work by Brolly Gábor.
 - `WGS84 -> ETRS89` does not apply a time-dependent datum model.
 - Real survey accuracy still depends on the GNSS realization and epoch.
 
