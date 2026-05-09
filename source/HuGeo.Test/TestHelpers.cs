@@ -76,3 +76,105 @@ internal static class EhtTestData
         return points;
     }
 }
+
+internal static class OfficialFixtureData
+{
+    internal record ForwardPoint(
+        string PointNumber,
+        double EovY,
+        double EovX,
+        double EovH,
+        double ExpectedLat,
+        double ExpectedLon,
+        double ExpectedH);
+
+    internal record ReversePoint(
+        string PointNumber,
+        double Latitude,
+        double Longitude,
+        double Height,
+        double EovY,
+        double EovX,
+        double EovH);
+
+    private const string ForwardOfficialResource = "HuGeo.Tests.TestData.Official.eov-etrs89-official.txt";
+    private const string ReverseOfficialResource = "HuGeo.Tests.TestData.Official.etrs89-eov-official.txt";
+    private const string ForwardExtendedResource = "HuGeo.Tests.TestData.Official.eov-etrs89-official-extended.txt";
+    private const string ReverseExtendedResource = "HuGeo.Tests.TestData.Official.etrs89-eov-official-extended.txt";
+
+    public static List<ForwardPoint> LoadOfficialForwardPoints() =>
+        LoadForwardPoints(ForwardOfficialResource);
+
+    public static List<ReversePoint> LoadOfficialReversePoints() =>
+        LoadReversePoints(ReverseOfficialResource);
+
+    public static List<ForwardPoint> LoadExtendedForwardPoints() =>
+        LoadForwardPoints(ForwardExtendedResource);
+
+    public static List<ReversePoint> LoadExtendedReversePoints() =>
+        LoadReversePoints(ReverseExtendedResource);
+
+    private static List<ForwardPoint> LoadForwardPoints(string resourceName)
+    {
+        using var reader = OpenResourceReader(resourceName);
+
+        var points = new List<ForwardPoint>();
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//"))
+                continue;
+
+            var parts = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 7)
+                continue;
+
+            points.Add(new ForwardPoint(
+                parts[0].Trim(),
+                TestHelpers.ParseHu(parts[1]),
+                TestHelpers.ParseHu(parts[2]),
+                TestHelpers.ParseHu(parts[3]),
+                TestHelpers.ParseHu(parts[4]),
+                TestHelpers.ParseHu(parts[5]),
+                TestHelpers.ParseHu(parts[6])));
+        }
+
+        return points;
+    }
+
+    private static List<ReversePoint> LoadReversePoints(string resourceName)
+    {
+        using var reader = OpenResourceReader(resourceName);
+
+        var points = new List<ReversePoint>();
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//"))
+                continue;
+
+            var parts = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 7)
+                continue;
+
+            points.Add(new ReversePoint(
+                parts[0].Trim(),
+                TestHelpers.ParseHu(parts[1]),
+                TestHelpers.ParseHu(parts[2]),
+                TestHelpers.ParseHu(parts[3]),
+                TestHelpers.ParseHu(parts[4]),
+                TestHelpers.ParseHu(parts[5]),
+                TestHelpers.ParseHu(parts[6])));
+        }
+
+        return points;
+    }
+
+    private static StreamReader OpenResourceReader(string resourceName)
+    {
+        var assembly = typeof(OfficialFixtureData).Assembly;
+        var stream = assembly.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
+        return new StreamReader(stream);
+    }
+}

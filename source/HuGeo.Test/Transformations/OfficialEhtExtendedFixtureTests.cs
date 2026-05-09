@@ -36,7 +36,7 @@ public class OfficialEhtExtendedFixtureTests : IAsyncLifetime
     [Fact]
     public void ExtendedFixture_EovToEtrs89_ValidatesFullCoverage()
     {
-        var points = LoadExtendedOfficialPoints();
+        var points = OfficialFixtureData.LoadExtendedForwardPoints();
         Assert.True(points.Count >= 1900, "Extended fixture should have ~2000 points");
 
         var latErrors = new List<double>();
@@ -101,7 +101,7 @@ public class OfficialEhtExtendedFixtureTests : IAsyncLifetime
     [Fact]
     public void ExtendedFixture_Etrs89ToEov_ValidatesReverseApproximation()
     {
-        var points = LoadReverseExtendedOfficialPoints();
+        var points = OfficialFixtureData.LoadExtendedReversePoints();
         Assert.True(points.Count >= 1900, "Extended reverse fixture should have ~2000 points");
 
         var yErrors = new List<double>();
@@ -167,7 +167,7 @@ public class OfficialEhtExtendedFixtureTests : IAsyncLifetime
     [Fact]
     public void ExtendedFixture_RoundTripConsistency()
     {
-        var forwardPoints = LoadExtendedOfficialPoints();
+        var forwardPoints = OfficialFixtureData.LoadExtendedForwardPoints();
         var roundTripErrors = new List<double>();
         var covered = 0;
 
@@ -206,90 +206,6 @@ public class OfficialEhtExtendedFixtureTests : IAsyncLifetime
 
         Assert.True(covered > 0, "Round-trip test should evaluate some points");
         Assert.True(roundTripErrors.Max() <= 0.05, $"Round-trip error too large: {roundTripErrors.Max():G17} m");
-    }
-
-    private record ExtendedOfficialPoint(
-        string PointNumber,
-        double EovY,
-        double EovX,
-        double EovH,
-        double ExpectedLat,
-        double ExpectedLon,
-        double ExpectedH);
-
-    private record ReverseExtendedOfficialPoint(
-        string PointNumber,
-        double Latitude,
-        double Longitude,
-        double Height,
-        double EovY,
-        double EovX,
-        double EovH);
-
-    private static double ParseHu(string s) => TestHelpers.ParseHu(s);
-
-    private static List<ExtendedOfficialPoint> LoadExtendedOfficialPoints()
-    {
-        var assembly = typeof(OfficialEhtExtendedFixtureTests).Assembly;
-        var resourceName = "HuGeo.Tests.TestData.Official.eov-etrs89-official-extended.txt";
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
-        using var reader = new StreamReader(stream);
-
-        var points = new List<ExtendedOfficialPoint>();
-        string? line;
-        while ((line = reader.ReadLine()) != null)
-        {
-            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//"))
-                continue;
-
-            var parts = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 7)
-                continue;
-
-            points.Add(new ExtendedOfficialPoint(
-                parts[0].Trim(),
-                ParseHu(parts[1]),
-                ParseHu(parts[2]),
-                ParseHu(parts[3]),
-                ParseHu(parts[4]),
-                ParseHu(parts[5]),
-                ParseHu(parts[6])));
-        }
-
-        return points;
-    }
-
-    private static List<ReverseExtendedOfficialPoint> LoadReverseExtendedOfficialPoints()
-    {
-        var assembly = typeof(OfficialEhtExtendedFixtureTests).Assembly;
-        var resourceName = "HuGeo.Tests.TestData.Official.etrs89-eov-official-extended.txt";
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
-        using var reader = new StreamReader(stream);
-
-        var points = new List<ReverseExtendedOfficialPoint>();
-        string? line;
-        while ((line = reader.ReadLine()) != null)
-        {
-            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//"))
-                continue;
-
-            var parts = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 7)
-                continue;
-
-            points.Add(new ReverseExtendedOfficialPoint(
-                parts[0].Trim(),
-                ParseHu(parts[1]),
-                ParseHu(parts[2]),
-                ParseHu(parts[3]),
-                ParseHu(parts[4]),
-                ParseHu(parts[5]),
-                ParseHu(parts[6])));
-        }
-
-        return points;
     }
 
     private static double Percentile(List<double> values, double p) =>

@@ -7,21 +7,19 @@ public record Wgs84Coordinate(double Latitude, double Longitude, double Height =
     private const double MinLongitude = -180.0;
     private const double MaxLongitude = 180.0;
 
-    private const double HungarianMinLat = 45.7;
-    private const double HungarianMaxLat = 48.6;
-    private const double HungarianMinLon = 16.1;
-    private const double HungarianMaxLon = 22.9;
-
     public bool IsValid()
     {
         return Latitude >= MinLatitude && Latitude <= MaxLatitude &&
                Longitude >= MinLongitude && Longitude <= MaxLongitude;
     }
 
+    /// <summary>
+    /// Checks whether the coordinate falls inside the Hungary country polygon.
+    /// This is not just a bounding-box test.
+    /// </summary>
     public bool IsInHungary()
     {
-        return Latitude >= HungarianMinLat && Latitude <= HungarianMaxLat &&
-               Longitude >= HungarianMinLon && Longitude <= HungarianMaxLon;
+        return HungaryBoundary.Contains(Latitude, Longitude);
     }
 
     public string CoordinateSystemName => "WGS84";

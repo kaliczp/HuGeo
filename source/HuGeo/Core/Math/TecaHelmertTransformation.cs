@@ -1,11 +1,11 @@
-namespace HuGeo.Core.Math
+﻿namespace HuGeo.Core.Math
 {
     /// <summary>
     /// 7-paraméteres Helmert-transzformáció TECA (Brolly Gábor) paramétereivel.
+    /// Supported by the TECA compatibility path.
     /// Forward: WGS84 geocentric → IUGG67 (GRS67) geocentric
     /// Reverse: IUGG67 geocentric → WGS84 geocentric
     /// </summary>
-    [Obsolete("Use the official survey-grade pipeline for production. Keep this only for legacy TECA regression checks.")]
     public class TecaHelmertTransformation
     {
         // Eltolás WGS84 → IUGG67

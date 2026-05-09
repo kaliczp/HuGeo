@@ -35,7 +35,7 @@ public class LegacyVsOfficialComparisonTests : IAsyncLifetime
     [Fact]
     public void OfficialBeatsLegacy_OnOfficialForwardFixture()
     {
-        var points = LoadForwardFixture();
+        var points = OfficialFixtureData.LoadExtendedForwardPoints();
         Assert.True(points.Count > 0, "Forward fixture is empty");
 
         var officialErrors = new List<double>();
@@ -58,7 +58,7 @@ public class LegacyVsOfficialComparisonTests : IAsyncLifetime
             }
         }
 
-        _output.WriteLine("=== Legacy vs Official: forward fixture ===");
+        _output.WriteLine("=== Legacy vs Official: nationwide forward fixture ===");
         _output.WriteLine($"  official avg: {officialErrors.Average():G17} m");
         _output.WriteLine($"  official max: {officialErrors.Max():G17} m");
         _output.WriteLine($"  legacy avg: {legacyErrors.Average():G17} m");
@@ -72,7 +72,7 @@ public class LegacyVsOfficialComparisonTests : IAsyncLifetime
     [Fact]
     public void OfficialBeatsLegacy_OnOfficialReverseFixture()
     {
-        var points = LoadReverseFixture();
+        var points = OfficialFixtureData.LoadExtendedReversePoints();
         Assert.True(points.Count > 0, "Reverse fixture is empty");
 
         var officialErrors = new List<double>();
@@ -82,9 +82,9 @@ public class LegacyVsOfficialComparisonTests : IAsyncLifetime
         {
             try
             {
-                var etrs89 = new Etrs89Coordinate(pt.ExpectedLat, pt.ExpectedLon, pt.ExpectedH);
+                var etrs89 = new Etrs89Coordinate(pt.Latitude, pt.Longitude, pt.Height);
                 var official = _official.TransformEtrs89ToHd72(etrs89);
-                var legacy = _legacy.TransformWgs84ToHd72(new Wgs84Coordinate(pt.ExpectedLat, pt.ExpectedLon, pt.ExpectedH));
+                var legacy = _legacy.TransformWgs84ToHd72(new Wgs84Coordinate(pt.Latitude, pt.Longitude, pt.Height));
 
                 officialErrors.Add(System.Math.Sqrt(
                     System.Math.Pow(official.Easting - pt.EovY, 2) +
@@ -99,7 +99,7 @@ public class LegacyVsOfficialComparisonTests : IAsyncLifetime
             }
         }
 
-        _output.WriteLine("=== Legacy vs Official: reverse fixture ===");
+        _output.WriteLine("=== Legacy vs Official: nationwide reverse fixture ===");
         _output.WriteLine($"  official avg: {officialErrors.Average():G17} m");
         _output.WriteLine($"  official max: {officialErrors.Max():G17} m");
         _output.WriteLine($"  legacy avg: {legacyErrors.Average():G17} m");
@@ -108,73 +108,6 @@ public class LegacyVsOfficialComparisonTests : IAsyncLifetime
         Assert.True(officialErrors.Count > 0, "No comparable reverse points were evaluated");
         Assert.True(officialErrors.Average() < legacyErrors.Average(), "Official reverse path should beat legacy average error");
         Assert.True(officialErrors.Max() < legacyErrors.Max(), "Official reverse path should beat legacy max error");
-    }
-
-    private record ForwardPoint(double EovY, double EovX, double EovH, double ExpectedLat, double ExpectedLon, double ExpectedH);
-    private record ReversePoint(double ExpectedLat, double ExpectedLon, double ExpectedH, double EovY, double EovX, double EovH);
-
-    private static double ParseHu(string s) => TestHelpers.ParseHu(s);
-
-    private static List<ForwardPoint> LoadForwardFixture()
-    {
-        var assembly = typeof(LegacyVsOfficialComparisonTests).Assembly;
-        var resourceName = "HuGeo.Tests.TestData.Official.eov-etrs89-official.txt";
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
-        using var reader = new StreamReader(stream);
-
-        var points = new List<ForwardPoint>();
-        string? line;
-        while ((line = reader.ReadLine()) != null)
-        {
-            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//"))
-                continue;
-
-            var parts = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 7)
-                continue;
-
-            points.Add(new ForwardPoint(
-                ParseHu(parts[1]),
-                ParseHu(parts[2]),
-                ParseHu(parts[3]),
-                ParseHu(parts[4]),
-                ParseHu(parts[5]),
-                ParseHu(parts[6])));
-        }
-
-        return points;
-    }
-
-    private static List<ReversePoint> LoadReverseFixture()
-    {
-        var assembly = typeof(LegacyVsOfficialComparisonTests).Assembly;
-        var resourceName = "HuGeo.Tests.TestData.Official.etrs89-eov-official.txt";
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
-        using var reader = new StreamReader(stream);
-
-        var points = new List<ReversePoint>();
-        string? line;
-        while ((line = reader.ReadLine()) != null)
-        {
-            if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("//"))
-                continue;
-
-            var parts = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 7)
-                continue;
-
-            points.Add(new ReversePoint(
-                ParseHu(parts[1]),
-                ParseHu(parts[2]),
-                ParseHu(parts[3]),
-                ParseHu(parts[4]),
-                ParseHu(parts[5]),
-                ParseHu(parts[6])));
-        }
-
-        return points;
     }
 
     private static double HaversineMeters(double lat1Deg, double lon1Deg, double lat2Deg, double lon2Deg) =>

@@ -15,7 +15,6 @@ public class CoordinateTransformer : ILegacyCoordinateTransformer, IDisposable
     private bool _isInitialized;
     private bool _disposed;
 
-    [Obsolete("Prefer TransformerFactory.CreateSurveyGradeAsync() for the official path or keep this only for legacy compatibility.")]
     public CoordinateTransformer(GridDataRepository? gridRepository = null, TransformationMode mode = TransformationMode.GridWithFallback)
     {
         _gridRepository = gridRepository ?? new GridDataRepository();
@@ -84,14 +83,12 @@ public class CoordinateTransformer : ILegacyCoordinateTransformer, IDisposable
         return _transformationContext.TransformEtrs89ToHd72(etrs89);
     }
 
-    [Obsolete("Use TransformToEtrs89 followed by TransformToEov for survey workflows.")]
     public Wgs84Coordinate Transform(Hd72Coordinate hd72)
     {
         EnsureReady();
         return _transformationContext.TransformHd72ToWgs84(hd72);
     }
 
-    [Obsolete("Use TransformToEtrs89 followed by TransformToEov for survey workflows.")]
     public Hd72Coordinate Transform(Wgs84Coordinate wgs84)
     {
         EnsureReady();
@@ -153,22 +150,18 @@ public class CoordinateTransformer : ILegacyCoordinateTransformer, IDisposable
         return await Task.Run(() => TransformToEov(etrs89), cancellationToken);
     }
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     public Task<Wgs84Coordinate> TransformAsync(Hd72Coordinate hd72) =>
         TransformAsync(hd72, CancellationToken.None);
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     public async Task<Wgs84Coordinate> TransformAsync(Hd72Coordinate hd72, CancellationToken cancellationToken)
     {
         await EnsureReadyAsync(cancellationToken);
         return await Task.Run(() => Transform(hd72), cancellationToken);
     }
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     public Task<Hd72Coordinate> TransformAsync(Wgs84Coordinate wgs84) =>
         TransformAsync(wgs84, CancellationToken.None);
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     public async Task<Hd72Coordinate> TransformAsync(Wgs84Coordinate wgs84, CancellationToken cancellationToken)
     {
         await EnsureReadyAsync(cancellationToken);
@@ -331,11 +324,9 @@ public class CoordinateTransformer : ILegacyCoordinateTransformer, IDisposable
     public bool TryTransformToEov(Etrs89Coordinate etrs89, out Hd72Coordinate? result, out string? error) =>
         TryTransform(() => TransformToEov(etrs89), out result, out error);
 
-    [Obsolete("Use TryTransformToEtrs89 followed by TryTransformToEov for survey workflows.")]
     public bool TryTransform(Hd72Coordinate hd72, out Wgs84Coordinate? result, out string? error) =>
         TryTransform(() => Transform(hd72), out result, out error);
 
-    [Obsolete("Use TryTransformToEtrs89 followed by TryTransformToEov for survey workflows.")]
     public bool TryTransform(Wgs84Coordinate wgs84, out Hd72Coordinate? result, out string? error) =>
         TryTransform(() => Transform(wgs84), out result, out error);
 

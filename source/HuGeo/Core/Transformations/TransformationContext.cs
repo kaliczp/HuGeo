@@ -38,7 +38,6 @@ public class TransformationContext
     /// Legacy compatibility path. For survey workflows prefer HD72 -> ETRS89 -> EOV
     /// with the explicit ETRS89 API.
     /// </summary>
-    [Obsolete("Use TransformHd72ToEtrs89 followed by TransformEtrs89ToWgs84 for the official workflow.")]
     public Wgs84Coordinate TransformHd72ToWgs84(Hd72Coordinate hd72)
     {
         var etrs89 = TransformHd72ToEtrs89(hd72);
@@ -224,7 +223,6 @@ public class TransformationContext
     /// WGS84 -> HD72 (EOV) pipeline.
     /// Legacy compatibility path. For survey workflows prefer WGS84 -> ETRS89 -> EOV.
     /// </summary>
-    [Obsolete("Use TransformWgs84ToEtrs89 followed by TransformEtrs89ToHd72 for the official workflow.")]
     public Hd72Coordinate TransformWgs84ToHd72(Wgs84Coordinate wgs84)
     {
         wgs84.Validate();

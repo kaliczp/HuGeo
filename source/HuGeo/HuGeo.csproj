@@ -21,7 +21,7 @@
   <ItemGroup>
     <Compile Include="**/*.cs"
              Exclude="**/bin/**;**/obj/**" />
-    <EmbeddedResource Include="Resources/Resources/eov-wgs84.txt;Resources/Resources/wgs84-eov.txt;Resources/Resources/grid_delta.dat;Resources/Resources/*.hgbin"
+    <EmbeddedResource Include="Resources/Resources/eov-wgs84.txt;Resources/Resources/wgs84-eov.txt;Resources/Resources/grid_delta.dat;Resources/Resources/hungary.geojson;Resources/Resources/*.hgbin"
                       Exclude="**/bin/**;**/obj/**">
       <LogicalName>HuGeo.Resources.Resources.%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>

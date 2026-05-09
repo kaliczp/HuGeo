@@ -1,16 +1,48 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Visual Studio / Rider / VS Code
 .vs/
-.claude/
-.Claude/
-**/bin/
-**/obj/
-*.user
+.idea/
+.vscode/
 *.suo
+*.user
 *.userosscache
 *.sln.docstates
 
-# Local artifacts not meant for public repo
-eurocontrol-coordinate-reference-systems-basic-user-guide.pdf
-pontossagvizsgalat_teca.xls
+# Local assistant / tool state
+.claude/
 
-# Keep source data text files, but not temp/editor backups
-*~
+# .NET build output
+**/bin/
+**/obj/
+TestResults/
+*.coverage
+*.coveragexml
+coverage.cobertura.xml
+
+# Logs / temp
+*.log
+*.tmp
+*.temp
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Generated visuals and ad-hoc reports
+*-hires.png
+correction-grid-points.png
+correction-grid-eov-coordinates.png
+extended-fixture-distribution.png
+grid-vs-api-coverage.png
+test-plot.png
+
+# Excel and other local analysis artifacts
+teca/*.xls
+teca/*.xlsx

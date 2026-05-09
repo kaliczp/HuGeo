@@ -1,8 +1,11 @@
-using HuGeo.Core.Math;
+﻿using HuGeo.Core.Math;
 
 namespace HuGeo.DataAccess.Loaders;
 
-[Obsolete("Use the official grid loaders for production. Keep this only for legacy TECA regression checks.")]
+/// <summary>
+/// Supported loader for the TECA compatibility path.
+/// Prefer the official grid loaders for survey-grade workflows.
+/// </summary>
 public class TecaGridLoader
 {
     private const int H = TecaBilinearGrid.Rows;

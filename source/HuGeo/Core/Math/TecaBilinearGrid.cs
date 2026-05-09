@@ -1,12 +1,12 @@
-namespace HuGeo.Core.Math;
+﻿namespace HuGeo.Core.Math;
 
 /// <summary>
 /// TECA grid_delta.dat bináris rács: WGS84 lat/lon szerint indexelt EOV korrekciók.
+/// Supported by the TECA compatibility path; the official grid remains the recommended survey-grade workflow.
 /// Rácsparaméterek a TECA kódból: 50 sor × 116 oszlop, 0.06° lépés.
 /// Bal felső sarok: lon=16.05°, lat=48.65°.
 /// Bilineáris interpoláció (pontosan a TECA residual() függvényének C# portja).
 /// </summary>
-[Obsolete("Use the official grid pipeline for production. Keep this only for legacy TECA regression checks.")]
 public class TecaBilinearGrid
 {
     public const int Rows = 50;

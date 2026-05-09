@@ -9,7 +9,6 @@ public static class TransformerFactory
     /// This method blocks the calling thread. Avoid calling from ASP.NET Core or UI thread contexts
     /// as it may cause a deadlock. Prefer the async counterpart instead.
     /// </remarks>
-    [Obsolete("Use CreateSurveyGrade() for the official path. Keep this only for legacy compatibility.")]
     public static ICoordinateTransformer CreateDefault()
     {
         var transformer = new CoordinateTransformer(
@@ -25,7 +24,6 @@ public static class TransformerFactory
     /// This method blocks the calling thread. Avoid calling from ASP.NET Core or UI thread contexts
     /// as it may cause a deadlock. Prefer the async counterpart instead.
     /// </remarks>
-    [Obsolete("Use CreateSurveyGrade() for the official path. Keep this only for legacy compatibility.")]
     public static ICoordinateTransformer Create(TransformationMode mode = TransformationMode.GridWithFallback)
     {
         var transformer = new CoordinateTransformer(
@@ -40,7 +38,6 @@ public static class TransformerFactory
     /// <remarks>
     /// This method blocks the calling thread. Prefer <see cref="CreateSurveyGradeAsync"/>.
     /// </remarks>
-    [Obsolete("Use CreateSurveyGradeAsync(). Synchronous initialization blocks the calling thread.")]
     public static ICoordinateTransformer CreateSurveyGrade()
     {
         var transformer = new CoordinateTransformer(
@@ -52,12 +49,10 @@ public static class TransformerFactory
         return transformer;
     }
 
-    [Obsolete("Use CreateSurveyGradeAsync() for the official path. Keep this only for legacy compatibility.")]
     public static Task<ICoordinateTransformer> CreateAsync(
         TransformationMode mode = TransformationMode.GridWithFallback) =>
         CreateAsync(mode, CancellationToken.None);
 
-    [Obsolete("Use CreateSurveyGradeAsync() for the official path. Keep this only for legacy compatibility.")]
     public static async Task<ICoordinateTransformer> CreateAsync(
         TransformationMode mode,
         CancellationToken cancellationToken)

@@ -55,27 +55,19 @@ public interface ICoordinateTransformer
 
 public interface ILegacyCoordinateTransformer : ICoordinateTransformer
 {
-    [Obsolete("Use TransformToEtrs89 followed by TransformToEov for survey workflows.")]
     Wgs84Coordinate Transform(Hd72Coordinate hd72);
 
-    [Obsolete("Use TransformToEtrs89 followed by TransformToEov for survey workflows.")]
     Hd72Coordinate Transform(Wgs84Coordinate wgs84);
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     Task<Wgs84Coordinate> TransformAsync(Hd72Coordinate hd72);
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     Task<Wgs84Coordinate> TransformAsync(Hd72Coordinate hd72, CancellationToken cancellationToken);
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     Task<Hd72Coordinate> TransformAsync(Wgs84Coordinate wgs84);
 
-    [Obsolete("Use TransformToEtrs89Async followed by TransformToEovAsync for survey workflows.")]
     Task<Hd72Coordinate> TransformAsync(Wgs84Coordinate wgs84, CancellationToken cancellationToken);
 
-    [Obsolete("Use TryTransformToEtrs89 followed by TryTransformToEov for survey workflows.")]
     bool TryTransform(Hd72Coordinate hd72, out Wgs84Coordinate? result, out string? error);
 
-    [Obsolete("Use TryTransformToEtrs89 followed by TryTransformToEov for survey workflows.")]
     bool TryTransform(Wgs84Coordinate wgs84, out Hd72Coordinate? result, out string? error);
 }

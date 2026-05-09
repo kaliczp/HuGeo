@@ -1,14 +1,14 @@
-using HuGeo.Core.Coordinates;
+﻿using HuGeo.Core.Coordinates;
 using HuGeo.Core.Ellipsoids;
 using HuGeo.Core.Math;
 
 namespace HuGeo.Core.Transformations;
 
 /// <summary>
-/// TECA (Brolly Gábor) algoritmus C# portja — cm szintű pontossággal.
+/// TECA (Brolly Gábor) algoritmus C# portja.
+/// Supported legacy/compatibility transformation path alongside the official survey-grade workflow.
 /// WGS84 ↔ EOV/HD72 bidirectionálisan, iteratív grid-inverzzel.
 /// </summary>
-[Obsolete("Use the explicit legacy TECA path only for compatibility/regression checks. Prefer the official survey-grade API for production use.")]
 public class TecaTransformationContext
 {
     private readonly TecaHelmertTransformation _helmert = new();

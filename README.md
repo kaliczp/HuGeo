@@ -1,202 +1,87 @@
 # HuGeo
 
-HuGeo is a Hungarian coordinate transformation library for:
+Hungarian coordinate transformation library with two supported paths:
 
-- `WGS84` to `ETRS89`
-- `ETRS89` to `EOV` / `HD72`
-- `WGS84` to `EOV` / `HD72`
-- legacy TECA regression workflows
-
-The modern survey-grade path is:
-
-```text
-WGS84 -> ETRS89 -> EOV/HD72
-```
-
-`WGS84 -> ETRS89` is an explicit no-op type step in this library. The cm-level
-accuracy comes from the official horizontal grid and geoid in the `ETRS89 <-> EOV/HD72`
-step.
-
-The legacy TECA reference used by the regression tests is based on the original
-Soproni University application by Brolly Gábor. The original TECA work can be
-described as:
-
-- `TECA: Spatial Coordinate Conversion Application`
-- `Brolly Gábor`
-- `Coordinate transformation: WGS84 -> EOV using the national parameter set`
-- `The application improves the national transformation using residual corrections`
-
-The modern official solution used by HuGeo is:
-
-```text
-WGS84 -> ETRS89 -> EOV/HD72
-```
-
-Step summary:
-
-1. `WGS84 -> ETRS89`
-   - explicit type step in HuGeo
-   - no time-dependent datum model is applied
-2. `ETRS89 -> EOV/HD72`
-   - official horizontal correction grid is applied
-   - official geoid correction is applied for height
-3. `EOV/HD72 -> ETRS89 -> WGS84`
-   - reverse workflow uses the same official resources in the opposite direction
-
-Accuracy:
-
-| Path | Test set | Coverage | Mean horizontal error | High-end error |
-| --- | --- | ---: | ---: | ---: |
-| TECA legacy | Full EHT point set | `116236/116236` | `~0.11 m` | `0.739 m` max horizontal error |
-| Official grid | `eov-etrs89-official.txt` | `310/320` | `0.0036 m` | `0.0108 m` max horizontal error, `0.0072 m` p95 |
-| Official grid | `etrs89-eov-official.txt` | `310/320` | `0.0042 m` | `0.0114 m` max horizontal error, `0.0080 m` p95 |
-| Official grid | Digiterra benchmark | `103094/203681` | `0.1297 m` | `0.2806 m` p99, `27.3362 m` max on covered points |
-| Official grid | EHT 4.1 benchmark | `103084/116236` | `0.1187 m` | `0.2163 m` p99, `27.3362 m` max on covered points |
-
-Notes:
-
-- The legacy TECA path is a regression reference only.
-- The modern official grid path is the production route.
-- The `official.txt` fixtures are the best indication of survey-grade accuracy:
-  they stay around the millimetre to low-centimetre range on covered points.
-- The official reverse workflow is exercised by regression tests and is intended
-  for survey-grade use with the official grid and geoid resources.
-
-## Status
-
-- .NET `8.0`
-- packable NuGet library
-- official binary grid resources embedded in the package
-- legacy TECA compatibility kept for regression testing
-
-## Quick Start
-
-```csharp
-var transformer = await TransformerFactory.CreateSurveyGradeAsync();
-
-var wgs84 = new Wgs84Coordinate(47.4979, 19.0402, 123.4);
-var etrs89 = transformer.TransformToEtrs89(wgs84);
-var eov = transformer.TransformToEov(etrs89);
-```
-
-Reverse direction:
-
-```csharp
-var eov = new Hd72Coordinate(650000, 200000, 123.4);
-var etrs89 = transformer.TransformToEtrs89(eov);
-var wgs84 = transformer.TransformToWgs84(etrs89);
-```
-
-## High-Volume Point Clouds
-
-For 10 to 20 million points, use the allocation-free batch API on the concrete
-`CoordinateTransformer` type:
-
-```csharp
-var transformer = (CoordinateTransformer)await TransformerFactory.CreateSurveyGradeAsync();
-
-var input = new EovPoint[pointCount];
-var output = new Etrs89Point[pointCount];
-
-var written = transformer.TransformEovToEtrs89(input, output);
-```
-
-Use the span-based methods when you care about throughput:
-
-- `TransformEovToEtrs89(ReadOnlySpan<EovPoint>, Span<Etrs89Point>)`
-- `TransformEtrs89ToEov(ReadOnlySpan<Etrs89Point>, Span<EovPoint>)`
-
-These methods avoid per-point heap allocation and are intended for point cloud
-and batch GIS processing.
-
-## API Surface
-
-Recommended public entry points:
-
-- `TransformerFactory.CreateSurveyGradeAsync()`
-- `ICoordinateTransformer.TransformToEtrs89(...)`
-- `ICoordinateTransformer.TransformToEov(...)`
-- `CoordinateTransformer.TransformEovToEtrs89(...)`
-- `CoordinateTransformer.TransformEtrs89ToEov(...)`
-- `services.AddHuGeo()`
-
-Legacy compatibility is still available through `ILegacyCoordinateTransformer`
-and the obsolete `Transform(...)` / `TransformAsync(...)` methods.
+- `Official`: survey-grade `HD72/EOV <-> ETRS89` workflow using the official horizontal correction grid and geoid grid.
+- `TECA`: supported legacy/compatibility `WGS84 <-> HD72/EOV` workflow based on the historical TECA grid and Helmert parameters.
 
 ## Accuracy
 
-- `TransformationMode.OfficialGrid` uses the official correction grid and geoid.
-- The official data comes from the public EHT / PROJ sources.
-- The legacy TECA path is kept only for comparison and regression checks, and
-  is based on the Soproni Egyetem TECA work by Brolly Gábor.
-- `WGS84 -> ETRS89` does not apply a time-dependent datum model.
-- Real survey accuracy still depends on the GNSS realization and epoch.
+The current benchmark uses `2000` points sampled strictly inside the Hungary boundary polygon. Reference values are generated from the official EHT service, then the local `Official` and `TECA` implementations are measured against that ground truth.
 
-## Binary Resources
+Benchmark date: `2026-05-09`
 
-The official horizontal correction grid and geoid are stored as compact `.hgbin`
-embedded resources.
+Reference source: official EHT service endpoints at [eht.gnssnet.hu](https://eht.gnssnet.hu/)
 
-Reference CSV files stay in the repository and can be regenerated from the source
-data. The runtime package embeds only the binary grids.
+### Official vs TECA on the nationwide official benchmark
 
-Regenerate the binary resources:
+Forward benchmark (`HD72/EOV -> ETRS89/WGS84`):
 
-```powershell
-.\tools\Generate-BinaryGridResources.ps1
-```
+- `Official`: avg `0.0038 m`, max `0.0200 m`, p95 `0.0076 m`, p99 `0.0106 m`
+- `TECA`: avg `0.0141 m`, max `0.0585 m`, p95 `0.0284 m`, p99 `0.0386 m`
 
-## Fixture Generation
+Reverse benchmark (`ETRS89/WGS84 -> HD72/EOV`):
 
-Official EHT fixtures can be regenerated with:
+- `Official`: avg `0.0045 m`, max `0.0201 m`, p95 `0.0083 m`, p99 `0.0114 m`
+- `TECA`: avg `0.0140 m`, max `0.0588 m`, p95 `0.0283 m`, p99 `0.0381 m`
 
-```powershell
-.\tools\Generate-OfficialEhtFixtures.ps1
-```
+Height error on the same benchmark:
 
-The script uses the public EHT endpoints and rewrites the official test fixtures
-under `source/HuGeo.Test/TestData/Official/`.
+- `Official`: avg about `0.0013 m`, max about `0.0077 m`
+- `TECA`: avg about `0.0435 m`, max about `0.3125 m`
 
-## Install
+Round-trip consistency for the official path (`EOV -> ETRS89 -> EOV`):
 
-Use the project directly:
+- avg `0.0014 m`
+- max `0.0028 m`
 
-```powershell
-dotnet test .\source\HuGeo.slnx -c Debug
-dotnet pack .\source\HuGeo\HuGeo.csproj -c Debug
-```
+## Benchmark Data
 
-Or reference the NuGet package once published:
+The benchmark fixtures are generated from the official EHT API and stored here:
 
-```xml
-<PackageReference Include="HuGeo" Version="1.0.0" />
-```
+- [source/HuGeo.Test/TestData/Official/eov-etrs89-official-extended.txt](/D:/Repositories/Primusz/HuGeo/source/HuGeo.Test/TestData/Official/eov-etrs89-official-extended.txt)
+- [source/HuGeo.Test/TestData/Official/etrs89-eov-official-extended.txt](/D:/Repositories/Primusz/HuGeo/source/HuGeo.Test/TestData/Official/etrs89-eov-official-extended.txt)
+- [source/HuGeo.Test/TestData/Boundary/hungary.geojson](/D:/Repositories/Primusz/HuGeo/source/HuGeo.Test/TestData/Boundary/hungary.geojson)
 
-## Repository Layout
+Generator script:
 
-- `source/HuGeo` - library project
-- `source/HuGeo.Test` - regression and accuracy tests
-- `source/HuGeo/Api` - public API and DI extension
-- `source/HuGeo/Core` - coordinate models and math
-- `source/HuGeo/DataAccess` - grid loading and interpolation
-- `source/HuGeo/Resources` - embedded grid resources
-- `tools` - generation scripts
-- `teca` - legacy reference source
-- `docs` - background reference material
+- [tools/Generate-NationwideOfficialBenchmark.py](/D:/Repositories/Primusz/HuGeo/tools/Generate-NationwideOfficialBenchmark.py)
 
-## Tests
+Fixture validation:
 
-The test suite covers:
+- the generated nationwide fixtures are checked by `OfficialFixtureValidationTests`
+- every sampled benchmark point must stay inside the Hungary polygon, not just inside a bounding box
 
-- legacy TECA regression checks
-- official grid loading
-- official EHT web fixtures
-- survey-grade forward and reverse workflows
-- high-volume API coverage
+## Plots
 
-## Notes
+Benchmark points sampled inside the Hungary boundary:
 
-- The public API favors the explicit survey path: `WGS84 -> ETRS89 -> EOV`.
-- The legacy API is still present for compatibility, but it is marked obsolete.
-- The official grid reverse direction uses a documented approximation that is
-  validated by the existing fixtures.
+![Nationwide benchmark points](/D:/Repositories/Primusz/HuGeo/nationwide-official-benchmark-points.png)
+
+Hungary boundary, benchmark points, and correction grid coverage:
+
+![Grid coverage](/D:/Repositories/Primusz/HuGeo/nationwide-grid-coverage.png)
+
+## Coverage Notes
+
+For the `2000` nationwide benchmark points:
+
+- `HD72` correction grid bbox coverage: `100%`
+- `Geoid` grid bbox coverage: `100%`
+
+Grid extent summary:
+
+- `HD72` grid bbox: lon `16.1111..23.0556`, lat `45.5556..48.8889`
+- `Geoid` grid bbox: lon `16.1000..23.0420`, lat `45.5600..48.8900`
+
+The benchmark points are fully covered, but a few extreme western boundary vertices of the country polygon fall slightly outside those rectangular grid extents. This means the practical nationwide benchmark is covered, while the grid rectangles are not a perfect superset of every boundary vertex.
+
+## Validation
+
+Relevant tests:
+
+- `OfficialGridAccuracyTests`
+- `OfficialEhtExtendedFixtureTests`
+- `OfficialEhtWebReferenceTests`
+- `LegacyVsOfficialComparisonTests`
+- `TecaAccuracyTests`
