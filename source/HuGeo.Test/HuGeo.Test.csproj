@@ -26,6 +26,8 @@
     <EmbeddedResource Include="TestData\eov-wgs84-eht-test.txt" />
     <EmbeddedResource Include="TestData\Official\eov-etrs89-official.txt" />
     <EmbeddedResource Include="TestData\Official\etrs89-eov-official.txt" />
+    <EmbeddedResource Include="TestData\Official\eov-etrs89-official-extended.txt" />
+    <EmbeddedResource Include="TestData\Official\etrs89-eov-official-extended.txt" />
   </ItemGroup>
 
   <ItemGroup>
