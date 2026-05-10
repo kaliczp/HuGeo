@@ -212,13 +212,13 @@ void main (void)
   free(md);
   
   puts("Adja meg az input fajlnevet [kiterjesztessel]:\n");
-  gets(FilNamIn); 
+  fgets(FilNamIn, 256, stdin);
 
   FilIn=fopen(FilNamIn, "rt");
   if(FilIn==NULL) { printf("Hibas fajlnev: %s\n",FilNamIn); return; }
   
   puts("Adja meg az output fajlnevet [kiterjesztessel]:\n");
-  gets(FilNamOut);
+  fgets(FilNamOut, 256, stdin);
   FilOut=fopen(FilNamOut, "wt");
 
   n=0;
